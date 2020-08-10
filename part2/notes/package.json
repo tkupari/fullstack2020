@@ -5,6 +5,7 @@
   "dependencies": {
     "@types/react": "^16.9.44",
     "@types/react-dom": "^16.9.8",
+    "axios": "^0.19.2",
     "cra-template": "1.0.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -14,7 +15,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server": "json-server -p3001 --watch db.json"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +32,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "json-server": "^0.16.1"
   }
 }
