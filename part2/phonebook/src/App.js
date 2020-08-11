@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import phonebookService from './services/phonebook'
 
+const Notification = ({ message, messageClass }) => {
+  if(message === null)
+    return null
+
+  return (
+    <div className={'message ' + messageClass}>
+      {message}
+    </div>
+  )
+}
+
 const Filter = ({ filter, setFilter }) => {
   const handleFilterChange = (event) => {
     setFilter(event.target.value)
@@ -12,7 +23,7 @@ const Filter = ({ filter, setFilter }) => {
   )
 }
 
-const PersonForm = ({ persons, setPersons }) => {
+const PersonForm = ({ persons, setPersons, notify }) => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
 
@@ -32,6 +43,7 @@ const PersonForm = ({ persons, setPersons }) => {
           phonebookService.update(existing.id, personData)
             .then(newPerson => {
               setPersons(persons.map(p => p.id !== existing.id ? p : newPerson))
+              notify(`Updated ${newPerson.name}`)
             })
         }
       } else {
@@ -39,10 +51,11 @@ const PersonForm = ({ persons, setPersons }) => {
         phonebookService.create(personData)
           .then(newPerson => {
             setPersons(persons.concat(newPerson))
-            setNewName('')
-            setNewNumber('')
+            notify(`Added ${newPerson.name}`)
           })
       }
+      setNewName('')
+      setNewNumber('')
     }
   }
   return (
@@ -63,16 +76,20 @@ const Person = ({ person, deleteperson }) => {
   return (
     <div>
       {person.name} {person.number}
-      <button onClick={() => deleteperson(person.id)}>delete</button>
+      <button onClick={() => deleteperson(person)}>delete</button>
     </div>
   )
 }
 
-const Persons = ({ persons, filter, setpersons }) => {
-  const deletePerson = (id) => {
-    phonebookService.remove(id).then(_response =>
-      setpersons(persons.filter(p => p.id !== id))
-    )
+const Persons = ({ persons, filter, setpersons, notify, error }) => {
+  const deletePerson = (person) => {
+    phonebookService.remove(person.id).then(_response => {
+      notify(`${person.name} deleted`)
+      setpersons(persons.filter(p => p.id !== person.id))
+    }).catch(_response => {
+      error(`${person.name} has already been deleted from server`)
+      setpersons(persons.filter(p => p.id !== person.id))
+    })
   }
   const personsToShow = filter.length > 0
     ? persons.filter(p => p.name.toLowerCase().includes(filter))
@@ -88,6 +105,8 @@ const App = () => {
   const [ persons, setPersons ] = useState([
   ])
   const [ filter,  setFilter ] =  useState('')
+  const [ message, setMessage ] = useState(null)
+  const [ messageClass, setMessageClass ] = useState('info')
 
   const loadData = () => {
     phonebookService.getAll().then(initialData => 
@@ -96,15 +115,31 @@ const App = () => {
   }
   useEffect(loadData, [])
 
+  const showMessage = (message, messageClass) => {
+    setMessage(message)
+    setMessageClass(messageClass)
+    setTimeout(() => {
+      setMessage(null)
+    }, 2000)
+  }
+
+  const notify = (message) => {
+    showMessage(message, 'info')
+  }
+
+  const error = (message) => {
+    showMessage(message, 'error')
+  }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageClass={messageClass} />
       <Filter filter={filter} setFilter={setFilter} />
       <h2>add a new</h2>
-      <PersonForm persons={persons} setPersons={setPersons}/>
+      <PersonForm persons={persons} setPersons={setPersons} notify={notify}/>
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} setpersons={setPersons} />
+      <Persons persons={persons} filter={filter} setpersons={setPersons} notify={notify} error={error}/>
     </div>
   )
 }
