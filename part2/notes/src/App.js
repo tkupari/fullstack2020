@@ -14,6 +14,21 @@ const Notification = ({ message }) => {
   )
 }
 
+const Footer = () => {
+  const footerStyle = {
+    color: 'green',
+    fontStyle: 'italic',
+    fontSize: 16
+  }
+
+  return (
+    <div style={footerStyle}>
+      <br />
+      <em>Note app, 2020</em>
+    </div>
+  )
+}
+
 const App = () => {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
@@ -102,6 +117,7 @@ const App = () => {
         />
         <button type="submit">save</button>
       </form>
+      <Footer />
     </div>
   )
 }
