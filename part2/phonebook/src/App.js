@@ -25,8 +25,15 @@ const PersonForm = ({ persons, setPersons }) => {
   const addName = (event) => {
     event.preventDefault()
     if(newName.length > 0) {
-      if(persons.map(p => p.name).includes(newName)) {
-        alert(`${newName} is already added to phonebook`)
+      const existing = persons.find(p => p.name === newName)
+      if(existing) {
+        if(window.confirm(`${newName} is already added to phonebook. Do you want to update the phone number?`)) {
+          const personData = {...existing, number: newNumber}
+          phonebookService.update(existing.id, personData)
+            .then(newPerson => {
+              setPersons(persons.map(p => p.id !== existing.id ? p : newPerson))
+            })
+        }
       } else {
         const personData = {name: newName, number: newNumber}
         phonebookService.create(personData)
@@ -51,13 +58,28 @@ const PersonForm = ({ persons, setPersons }) => {
   )
 }
 
-const Persons = ({ persons, filter }) => {
+const Person = ({ person, deleteperson }) => {
+
+  return (
+    <div>
+      {person.name} {person.number}
+      <button onClick={() => deleteperson(person.id)}>delete</button>
+    </div>
+  )
+}
+
+const Persons = ({ persons, filter, setpersons }) => {
+  const deletePerson = (id) => {
+    phonebookService.remove(id).then(_response =>
+      setpersons(persons.filter(p => p.id !== id))
+    )
+  }
   const personsToShow = filter.length > 0
     ? persons.filter(p => p.name.toLowerCase().includes(filter))
     : persons
   return (
     <div>
-    {personsToShow.map(person => <p>{person.name} {person.number}</p>)}
+    {personsToShow.map(person => <Person key={person.name} person={person} deleteperson={deletePerson} />)}
     </div>
   )
 }
@@ -82,7 +104,7 @@ const App = () => {
       <h2>add a new</h2>
       <PersonForm persons={persons} setPersons={setPersons}/>
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} />
+      <Persons persons={persons} filter={filter} setpersons={setPersons} />
     </div>
   )
 }
