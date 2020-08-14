@@ -23,7 +23,7 @@ const Filter = ({ filter, setFilter }) => {
   )
 }
 
-const PersonForm = ({ persons, setPersons, notify }) => {
+const PersonForm = ({ persons, setPersons, notify, error }) => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
 
@@ -45,6 +45,9 @@ const PersonForm = ({ persons, setPersons, notify }) => {
               setPersons(persons.map(p => p.id !== existing.id ? p : newPerson))
               notify(`Updated ${newPerson.name}`)
             })
+            .catch(err => {
+              error(err.response.data.error)
+            })
         }
       } else {
         const personData = {name: newName, number: newNumber}
@@ -52,6 +55,9 @@ const PersonForm = ({ persons, setPersons, notify }) => {
           .then(newPerson => {
             setPersons(persons.concat(newPerson))
             notify(`Added ${newPerson.name}`)
+          })
+          .catch(err => {
+            error(err.response.data.error)
           })
       }
       setNewName('')
@@ -137,7 +143,7 @@ const App = () => {
       <Notification message={message} messageClass={messageClass} />
       <Filter filter={filter} setFilter={setFilter} />
       <h2>add a new</h2>
-      <PersonForm persons={persons} setPersons={setPersons} notify={notify}/>
+      <PersonForm persons={persons} setPersons={setPersons} notify={notify} error={error}/>
       <h2>Numbers</h2>
       <Persons persons={persons} filter={filter} setpersons={setPersons} notify={notify} error={error}/>
     </div>
