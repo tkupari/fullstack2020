@@ -8,11 +8,10 @@ const Blog = require('../models/blog')
 beforeEach(async() => {
   await Blog.deleteMany({})
 
-  let blog = new Blog(helper.initialBlogs[0])
-  await blog.save()
-
-  blog = new Blog(helper.initialBlogs[1])
-  await blog.save()
+  for(let blog of helper.initialBlogs) {
+    let blogObject = new Blog(blog)
+    await blogObject.save()
+  }
 })
 
 test('notes are returned as json', async () => {
