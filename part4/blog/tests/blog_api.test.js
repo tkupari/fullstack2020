@@ -68,6 +68,17 @@ test('new blog likes defaults to 0', async () => {
   expect(response.body.likes).toBe(0)
 })
 
+test('returns error if title is missing', async () => {
+  const newBlog = {
+    author: 'Test User',
+    url: 'http://www.example.com/blog/1'
+  }
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
