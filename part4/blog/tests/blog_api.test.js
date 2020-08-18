@@ -73,6 +73,22 @@ describe('when there is a collection of blogs', () => {
       expect(blogs).toHaveLength(helper.initialBlogs.length - 1)
     })
   })
+
+  describe('updating a blog post', () => {
+    test('succeeds for valid id', async () => {
+      let response = await api.get('/api/blogs')
+      const oldData = response.body[0]
+      const newData = {
+        likes: oldData.likes + 1
+      }
+
+      response = await api
+        .put(`/api/blogs/${oldData.id}`)
+        .send(newData)
+      expect(response.status).toBe(200)
+      expect(response.body.likes).toBe(oldData.likes + 1)
+    })
+  })
 })
 
 describe('addition of new blog post', () => {
