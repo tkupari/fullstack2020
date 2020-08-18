@@ -54,8 +54,20 @@ test('posting to api creates a new blog post', async () => {
 
   response = await api.get('/api/blogs')
   expect(response.body).toHaveLength(3)
-
 })
+
+test('new blog likes defaults to 0', async () => {
+  const newBlog = {
+    title: 'A new blog',
+    author: 'Test User',
+    url: 'http://www.example.com/blog/1'
+  }
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+  expect(response.body.likes).toBe(0)
+})
+
 
 afterAll(() => {
   mongoose.connection.close()
