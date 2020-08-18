@@ -39,6 +39,24 @@ test('blog has id', async () => {
   expect(response.body[0].id).toBeDefined()
 })
 
+test('posting to api creates a new blog post', async () => {
+  const newBlog = {
+    title: 'A new blog',
+    author: 'Test User',
+    url: 'http://www.example.com/blog/1',
+    likes: 0
+  }
+  let response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+  expect(response.status).toBe(201)
+  expect(response.body.title).toBe('A new blog')
+
+  response = await api.get('/api/blogs')
+  expect(response.body).toHaveLength(3)
+
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
