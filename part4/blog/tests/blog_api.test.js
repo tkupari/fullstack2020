@@ -36,6 +36,43 @@ describe('when there is a collection of blogs', () => {
     const response = await api.get('/api/blogs')
     expect(response.body[0].id).toBeDefined()
   })
+
+  describe('viewing a single blog post', () => {
+    test('succeeds with valid id', async () => {
+      const response = await api.get('/api/blogs')
+      const id = response.body[0].id
+      await api
+        .get(`/api/blogs/${id}`)
+        .expect(200)
+    })
+
+    test('fails with 404 for non-existing id', async () => {
+      const id = await helper.nonExistingId()
+      await api
+        .get(`/api/blogs/${id}`)
+        .expect(404)
+    })
+
+    test('fails with 400 for invalid id', async () => {
+      const id = 'adsdsafasgagasgas'
+      await api
+        .get(`/api/blogs/${id}`)
+        .expect(400)
+    })
+  })
+
+  describe('deleting a blog post', () => {
+    test('succeeds for valid id', async () => {
+      const response = await api.get('/api/blogs')
+      const id = response.body[0].id
+      await api
+        .delete(`/api/blogs/${id}`)
+        .expect(204)
+
+      const blogs = await helper.blogsInDb()
+      expect(blogs).toHaveLength(helper.initialBlogs.length - 1)
+    })
+  })
 })
 
 describe('addition of new blog post', () => {
