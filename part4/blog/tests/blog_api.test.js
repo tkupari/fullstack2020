@@ -4,13 +4,17 @@ const helper = require('./test_helper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 describe('when there is a collection of blogs', () => {
   beforeEach(async() => {
+    await User.deleteMany({})
     await Blog.deleteMany({})
 
+    const user = await helper.createUser()
     for(let blog of helper.initialBlogs) {
       let blogObject = new Blog(blog)
+      blogObject.user = user.id
       await blogObject.save()
     }
   })
@@ -64,9 +68,13 @@ describe('when there is a collection of blogs', () => {
   describe('deleting a blog post', () => {
     test('succeeds for valid id', async () => {
       const response = await api.get('/api/blogs')
-      const id = response.body[0].id
+      const blog = response.body[0]
+      const id = blog.id
+      const user = await User.findById(blog.user.id)
+      const token = helper.getTokenForUser(user)
       await api
         .delete(`/api/blogs/${id}`)
+        .set('Authorization', `bearer ${token}`)
         .expect(204)
 
       const blogs = await helper.blogsInDb()
@@ -93,10 +101,11 @@ describe('when there is a collection of blogs', () => {
 
 describe('addition of new blog post', () => {
   beforeEach(async() => {
+    await User.deleteMany({})
     await Blog.deleteMany({})
   })
 
-  test('succeeds with valid data', async () => {
+  test('fails without token', async () => {
     const newBlog = {
       title: 'A new blog',
       author: 'Test User',
@@ -106,6 +115,21 @@ describe('addition of new blog post', () => {
     let response = await api
       .post('/api/blogs')
       .send(newBlog)
+    expect(response.status).toBe(401)
+  })
+
+  test('succeeds with valid data', async () => {
+    const token = await helper.createUserAndGetToken()
+    const newBlog = {
+      title: 'A new blog',
+      author: 'Test User',
+      url: 'http://www.example.com/blog/1',
+      likes: 0
+    }
+    let response = await api
+      .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
+      .send(newBlog)
     expect(response.status).toBe(201)
     expect(response.body.title).toBe('A new blog')
 
@@ -114,6 +138,7 @@ describe('addition of new blog post', () => {
   })
 
   test('initializes likes to 0', async () => {
+    const token = await helper.createUserAndGetToken()
     const newBlog = {
       title: 'A new blog',
       author: 'Test User',
@@ -121,17 +146,20 @@ describe('addition of new blog post', () => {
     }
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
     expect(response.body.likes).toBe(0)
   })
 
   test('fails if title is missing', async () => {
+    const token = await helper.createUserAndGetToken()
     const newBlog = {
       author: 'Test User',
       url: 'http://www.example.com/blog/1'
     }
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(400)
 
@@ -140,12 +168,14 @@ describe('addition of new blog post', () => {
   })
 
   test('fails if url is missing', async () => {
+    const token = await helper.createUserAndGetToken()
     const newBlog = {
       title: 'A new blogpost',
       author: 'Test User'
     }
     await api
       .post('/api/blogs')
+      .set('Authorization', `bearer ${token}`)
       .send(newBlog)
       .expect(400)
 
