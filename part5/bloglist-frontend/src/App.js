@@ -3,7 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
-const BlogForm = ({ blogs, setBlogs }) => {
+const BlogForm = ({ blogs, setBlogs, notify }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
@@ -15,6 +15,7 @@ const BlogForm = ({ blogs, setBlogs }) => {
     setTitle('')
     setAuthor('')
     setUrl('')
+    notify(`a new blog ${newBlog.title} by ${newBlog.author} added`)
   }
 
   return (
@@ -48,11 +49,24 @@ const BlogForm = ({ blogs, setBlogs }) => {
   )
 }
 
+const Notification = ({ message, messageClass }) => {
+  if(message === null)
+    return null
+
+  return (
+    <div className={'message ' + messageClass}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [message, setMessage] = useState(null)
+  const [messageClass, setMessageClass] = useState('info')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -68,6 +82,22 @@ const App = () => {
       blogService.setToken(user.token)
     }
   }, [])
+
+  const showMessage = (message, messageClass) => {
+    setMessage(message)
+    setMessageClass(messageClass)
+    setTimeout(() => {
+      setMessage(null)
+    }, 2000)
+  }
+
+  const notify = (message) => {
+    showMessage(message, 'info')
+  }
+
+  const error = (message) => {
+    showMessage(message, 'error')
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -85,18 +115,22 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      notify('Login successful')
     } catch (exeption) {
-      console.log('wrong credentials')
+      error('Invalid username or password', 'error')
     }
   }
+
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
+    notify('Logged out successfully')
   }
 
   if(user === null) {
     return (
       <div>
+        <Notification message={message} messageClass={messageClass} />
         <form onSubmit={handleLogin}>
           <div>
             username
@@ -124,12 +158,13 @@ const App = () => {
 
   return (
     <div>
+      <Notification message={message} messageClass={messageClass} />
       <h2>blogs</h2>
       <p>
         logged in as {user.name}
         <button onClick={logout}>logout</button>
       </p>
-      <BlogForm blogs={blogs} setBlogs={setBlogs}/>
+      <BlogForm blogs={blogs} setBlogs={setBlogs} notify={notify} />
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
