@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Togglable from './components/togglable'
 
-const BlogForm = ({ blogs, setBlogs, notify }) => {
+const BlogForm = ({ createBlog }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
-  const handleBlogSumbit = async (event) => {
+  const handleBlogSumbit = (event) => {
     event.preventDefault()
-    const newBlog = await blogService.create({title, author, url})
-    setBlogs(blogs.concat(newBlog))
+    createBlog({title, author, url})
     setTitle('')
-    setAuthor('')
     setUrl('')
-    notify(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+    setAuthor('')
   }
 
   return (
@@ -67,6 +66,8 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [message, setMessage] = useState(null)
   const [messageClass, setMessageClass] = useState('info')
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -127,6 +128,16 @@ const App = () => {
     notify('Logged out successfully')
   }
 
+  const addBlog = (blogData) => {
+    blogFormRef.current.toggleVisibility()
+    blogService
+      .create(blogData)
+      .then(newBlog => {
+        setBlogs(blogs.concat(newBlog))
+        notify(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+      })
+  }
+
   if(user === null) {
     return (
       <div>
@@ -164,7 +175,9 @@ const App = () => {
         logged in as {user.name}
         <button onClick={logout}>logout</button>
       </p>
-      <BlogForm blogs={blogs} setBlogs={setBlogs} notify={notify} />
+      <Togglable buttonLabel="new note" ref={blogFormRef}>
+        <BlogForm createBlog={addBlog}/>
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}
