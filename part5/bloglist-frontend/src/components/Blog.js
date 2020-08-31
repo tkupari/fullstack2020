@@ -16,10 +16,10 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
   const displayStyle = { display: showDetails ? '' : 'none' }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={toggleShowDetails}>{showDetails ? 'hide details' : 'show details'}</button>
-      <div style={displayStyle}>
+      <div className='blog-details' style={displayStyle}>
         {blog.url}<br/>
         likes {blog.likes}<button onClick={handleLike}>like</button><br/>
         {blog.user.name}<br/>
