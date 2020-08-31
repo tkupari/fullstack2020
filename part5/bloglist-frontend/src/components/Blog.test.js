@@ -42,7 +42,32 @@ describe('<Blog />', () => {
 
     expect(details).toHaveTextContent('example.com')
     expect(details).toHaveTextContent('likes 5')
-
   })
+
+})
+
+
+test('clicking like button twice calls callback twice', () => {
+  const mockHandler = jest.fn()
+  const blog = {
+    title: 'A blog title',
+    author: 'Test Author',
+    user: {
+      name: 'Test User'
+    },
+    url: 'http:/www.example.com',
+    likes: 5
+  }
+  const component = render(
+    <Blog blog={blog} handleLike={mockHandler} />
+  )
+
+  const likeButton = component.getByText('like')
+  fireEvent.click(likeButton)
+  fireEvent.click(likeButton)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+
+
 
 })
