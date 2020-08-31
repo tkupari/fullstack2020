@@ -1,6 +1,6 @@
 import React from 'react'
 import Blog from './Blog'
-import { render } from '@testing-library/react'
+import { render, fireEvent } from '@testing-library/react'
 
 describe('<Blog />', () => {
   let component
@@ -11,7 +11,9 @@ describe('<Blog />', () => {
       author: 'Test Author',
       user: {
         name: 'Test User'
-      }
+      },
+      url: 'http:/www.example.com',
+      likes: 5
     }
     component = render(
       <Blog blog={blog} />
@@ -27,6 +29,20 @@ describe('<Blog />', () => {
   test('hides details by default', () => {
     const details = component.container.querySelector('.blog-details')
     expect(details).toHaveStyle('display: none')
+  })
+
+  test('url and number of likes are displayed when details button has been clicked', () => {
+
+    const button = component.getByText('show details')
+    fireEvent.click(button)
+
+    const details = component.container.querySelector('.blog-details')
+
+    expect(details).not.toHaveStyle('display: none')
+
+    expect(details).toHaveTextContent('example.com')
+    expect(details).toHaveTextContent('likes 5')
+
   })
 
 })
