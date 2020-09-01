@@ -120,7 +120,7 @@ const App = () => {
     return (
       <div>
         <Notification message={message} messageClass={messageClass} />
-        <form onSubmit={handleLogin}>
+        <form id='loginForm' onSubmit={handleLogin}>
           <div>
             username
             <input
