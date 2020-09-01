@@ -32,16 +32,33 @@ describe('Blog app', function() {
 
   describe('logged in user', function() {
     beforeEach(function() {
-      cy.login('testuser', 'sekret')
+      cy.login({ username: 'testuser', password: 'sekret' })
     })
 
-    it.only('can create a new blog', function() {
+    it('can create a new blog', function() {
       cy.contains('new note').click()
       cy.get('#title').type('Title for a new blog')
       cy.get('#author').type('Author Name')
       cy.get('#url').type('http://www.example.com')
       cy.get('#submitButton').click()
       cy.contains('a new blog Title for a new blog by Author Name added')
+    })
+
+    describe('when there are blogs', function() {
+      beforeEach(function() {
+        cy.createBlog({ title: 'First blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/1' })
+        cy.createBlog({ title: 'Second blog', author: 'Bob', url: 'http://www.example.com/blogs/bob/1' })
+        cy.createBlog({ title: 'Third blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/2' })
+        cy.visit('http://localhost:3000')
+      })
+
+      it.only('can like a blog', function() {
+        cy.contains('Second blog').as('second')
+        cy.get('@second').contains('show details').click()
+        cy.get('@second').contains('likes 0')
+        cy.get('@second').contains('like').click()
+        cy.get('@second').contains('likes 1')
+      })
     })
   })
 })
