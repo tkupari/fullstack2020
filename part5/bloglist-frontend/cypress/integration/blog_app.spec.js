@@ -52,13 +52,35 @@ describe('Blog app', function() {
         cy.visit('http://localhost:3000')
       })
 
-      it.only('can like a blog', function() {
+      it('can like a blog', function() {
         cy.contains('Second blog').as('second')
         cy.get('@second').contains('show details').click()
         cy.get('@second').contains('likes 0')
         cy.get('@second').contains('like').click()
         cy.get('@second').contains('likes 1')
       })
+
+      it('can delete a blog he/she has created', function() {
+        cy.contains('Second blog').as('second')
+        cy.get('@second').contains('show details').click()
+        cy.get('@second').contains('delete').click()
+        cy.contains('Second blog').should('not.exist')
+      })
+
+      it('cannot delete a blog another user has created', function() {
+        const user = {
+          name: 'Another user',
+          username: 'another',
+          password: 'sekret'
+        }
+        cy.request('POST', 'http://localhost:3001/api/users/', user)
+        cy.login({ username: 'another', password: 'sekret' })
+        cy.contains('Second blog').as('second')
+        cy.get('@second').contains('show details').click()
+        cy.get('@second').contains('delete').click()
+        cy.contains('Second blog')
+      })
     })
+
   })
 })
