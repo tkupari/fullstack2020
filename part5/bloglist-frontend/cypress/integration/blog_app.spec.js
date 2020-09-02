@@ -46,18 +46,17 @@ describe('Blog app', function() {
 
     describe('when there are blogs', function() {
       beforeEach(function() {
-        cy.createBlog({ title: 'First blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/1' })
-        cy.createBlog({ title: 'Second blog', author: 'Bob', url: 'http://www.example.com/blogs/bob/1' })
-        cy.createBlog({ title: 'Third blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/2' })
+        cy.createBlog({ title: 'First blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/1', likes: 7 })
+        cy.createBlog({ title: 'Second blog', author: 'Bob', url: 'http://www.example.com/blogs/bob/1', likes: 3 })
+        cy.createBlog({ title: 'Third blog', author: 'Alice', url: 'http://www.example.com/blogs/alice/2', likes: 10 })
         cy.visit('http://localhost:3000')
       })
 
       it('can like a blog', function() {
         cy.contains('Second blog').as('second')
         cy.get('@second').contains('show details').click()
-        cy.get('@second').contains('likes 0')
         cy.get('@second').contains('like').click()
-        cy.get('@second').contains('likes 1')
+        cy.get('@second').contains('likes 4')
       })
 
       it('can delete a blog he/she has created', function() {
@@ -79,6 +78,14 @@ describe('Blog app', function() {
         cy.get('@second').contains('show details').click()
         cy.get('@second').contains('delete').click()
         cy.contains('Second blog')
+      })
+
+      it('blogs are sorted by likes on screen', function() {
+        cy.get('.blog').then(blogs => {
+          cy.wrap(blogs[0]).contains('Third blog')
+          cy.wrap(blogs[1]).contains('First blog')
+          cy.wrap(blogs[2]).contains('Second blog')
+        })
       })
     })
 
