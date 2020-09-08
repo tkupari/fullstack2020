@@ -11,10 +11,13 @@ const reducer = (state = empty, action) => {
   }
 }
 
-export const notify = (message) => {
-  return {
-    type: 'NOTIFICATION',
-    data: { message }
+export const notify = (message, timeOut) => {
+  return async dispatch => {
+    dispatch({
+      type: 'NOTIFICATION',
+      data: { message }
+    })
+    setTimeout(() => dispatch(clearNotification()), timeOut * 1000)
   }
 }
 
