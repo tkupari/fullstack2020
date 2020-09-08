@@ -1,13 +1,3 @@
-const getId = () => (100000 * Math.random()).toFixed(0)
-
-const asObject = (anecdote) => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0
-  }
-}
-
 const sortByVotes = anecdotes => anecdotes.sort((a, b) => b.votes - a.votes)
 
 const reducer = (state = [], action) => {
@@ -23,8 +13,7 @@ const reducer = (state = [], action) => {
         return anecdote
       }))
     case 'CREATE':
-      const newAnecdote = asObject(action.data.anecdote)
-      return state.concat(newAnecdote)
+      return state.concat(action.data.anecdote)
     case 'INIT_ANECDOTES':
       return action.data
     default:
