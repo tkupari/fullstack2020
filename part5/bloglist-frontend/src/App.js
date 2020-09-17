@@ -4,16 +4,19 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import Togglable from './components/togglable'
 import BlogForm from './components/BlogForm'
+import { useDispatch, useSelector } from 'react-redux'
+import { showMessage, clearNotification } from './reducers/notificationReducer'
 
-const Notification = ({ message, messageClass }) => {
-  if(message === null)
-    return null
+const Notification = () => {
+  const notification = useSelector(state => state)
 
-  return (
-    <div className={'message ' + messageClass}>
-      {message}
-    </div>
-  )
+  return notification.message
+    ? (
+      <div className={'message ' + notification.messageClass}>
+        {notification.message}
+      </div>
+    )
+    : null
 }
 
 const App = () => {
@@ -21,9 +24,8 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState(null)
-  const [messageClass, setMessageClass] = useState('info')
 
+  const dispatch = useDispatch()
   const blogFormRef = useRef()
 
   useEffect(() => {
@@ -41,20 +43,13 @@ const App = () => {
     }
   }, [])
 
-  const showMessage = (message, messageClass) => {
-    setMessage(message)
-    setMessageClass(messageClass)
-    setTimeout(() => {
-      setMessage(null)
-    }, 2000)
-  }
-
   const notify = (message) => {
-    showMessage(message, 'info')
+    const timeoutId = setTimeout(() => dispatch(clearNotification()), 2000)
+    dispatch(showMessage(message, 'info', timeoutId))
   }
 
   const error = (message) => {
-    showMessage(message, 'error')
+    dispatch(showMessage(message, 'error'))
   }
 
   const handleLogin = async (event) => {
@@ -119,7 +114,7 @@ const App = () => {
   if(user === null) {
     return (
       <div>
-        <Notification message={message} messageClass={messageClass} />
+        <Notification />
         <form id='loginForm' onSubmit={handleLogin}>
           <div>
             username
@@ -149,7 +144,7 @@ const App = () => {
 
   return (
     <div>
-      <Notification message={message} messageClass={messageClass} />
+      <Notification />
       <h2>blogs</h2>
       <p>
         logged in as {user.name}
