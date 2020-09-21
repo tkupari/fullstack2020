@@ -7,6 +7,8 @@ import { Provider } from 'react-redux'
 import notificationReducer from './reducers/notificationReducer'
 import blogReducer from './reducers/blogReducer'
 import userReducer from './reducers/userReducer'
+import { BrowserRouter as Router } from 'react-router-dom'
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 const reducer = combineReducers({
   notification: notificationReducer,
@@ -14,11 +16,13 @@ const reducer = combineReducers({
   users: userReducer
 })
 
-const store = createStore(reducer)
+const store = createStore(reducer, composeWithDevTools())
 
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <Router>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </Router>,
   document.getElementById('root')
 )

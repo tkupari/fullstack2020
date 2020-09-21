@@ -10,8 +10,8 @@ import { showMessage, clearNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './reducers/blogReducer'
 import { initializeUsers, setUser } from './reducers/userReducer'
 import {
-  BrowserRouter as Router,
-  Switch, Route
+  Switch, Route, Link,
+  useRouteMatch
 } from 'react-router-dom'
 
 
@@ -41,10 +41,30 @@ const Users = () => {
         </thead>
         <tbody>
           {users.map(user =>
-            <tr key={user.id}><td>{user.name}</td><td>{user.blogs.length}</td></tr>
+            <tr key={user.id}>
+              <td><Link to={`/users/${user.id}`}>{user.name}</Link></td><td>{user.blogs.length}</td>
+            </tr>
           )}
         </tbody>
       </table>
+    </div>
+  )
+}
+
+const User = ({ id }) => {
+  const users = useSelector(state => state.users.users)
+  const user = users.find(user => user.id === id)
+  if(!user)
+    return null
+  return (
+    <div>
+      <h2>{user.name}</h2>
+      <h3>added blogs</h3>
+      <ul>
+        {user.blogs.map(blog =>
+          <li key={blog.id}>{blog.title}</li>
+        )}
+      </ul>
     </div>
   )
 }
@@ -56,7 +76,8 @@ const App = () => {
   const dispatch = useDispatch()
   const blogFormRef = useRef()
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.users.current)
+  const currentUser = useSelector(state => state.users.current)
+  const users = useSelector(state => state.users.users)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -147,7 +168,12 @@ const App = () => {
         })
   }
 
-  if(user === null) {
+  const match = useRouteMatch('/users/:id')
+  const user_id = match
+    ? users.find(user => user.id === match.params.id).id
+    : null
+
+  if(currentUser === null) {
     return (
       <div>
         <Notification />
@@ -179,14 +205,17 @@ const App = () => {
   }
 
   return (
-    <Router>
+    <div>
       <Notification />
       <h2>blogs</h2>
       <p>
-        logged in as {user.name}
+        logged in as {currentUser.name}
         <button onClick={logout}>logout</button>
       </p>
       <Switch>
+        <Route path='/users/:id'>
+          <User id={user_id} />
+        </Route>
         <Route path='/users'>
           <Users />
         </Route>
@@ -199,7 +228,7 @@ const App = () => {
           )}
         </Route>
       </Switch>
-    </Router>
+    </div>
   )
 }
 
