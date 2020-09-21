@@ -6,9 +6,10 @@ import Togglable from './components/togglable'
 import BlogForm from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { showMessage, clearNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog } from './reducers/blogReducer'
 
 const Notification = () => {
-  const notification = useSelector(state => state)
+  const notification = useSelector(state => state.notification)
 
   return notification.message
     ? (
@@ -20,19 +21,19 @@ const Notification = () => {
 }
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
   const blogFormRef = useRef()
+  const blogs = useSelector(state => state.blogs)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs.sort((a, b) => b.likes - a.likes) )
+      dispatch(initializeBlogs(blogs))
     )
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
@@ -85,7 +86,7 @@ const App = () => {
     blogService
       .create(blogData)
       .then(newBlog => {
-        setBlogs(blogs.concat(newBlog))
+        dispatch(createBlog(newBlog))
         notify(`a new blog ${newBlog.title} by ${newBlog.author} added`)
       })
   }
@@ -99,7 +100,7 @@ const App = () => {
     blogService
       .update(blog.id, blogData)
       .then(updatedBlog => {
-        setBlogs(blogs.map(b => b.id !== blog.id ? b : updatedBlog))
+        // setBlogs(blogs.map(b => b.id !== blog.id ? b : updatedBlog))
       })
   }
 
@@ -107,7 +108,7 @@ const App = () => {
     if(window.confirm(`Remove blog ${blog.title}`))
       blogService.remove(blog.id)
         .then(() => {
-          setBlogs(blogs.filter(b => b.id !== blog.id))
+          // setBlogs(blogs.filter(b => b.id !== blog.id))
         })
   }
 
