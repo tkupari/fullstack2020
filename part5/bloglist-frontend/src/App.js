@@ -7,6 +7,8 @@ import BlogForm from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { showMessage, clearNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './reducers/blogReducer'
+import { setUser } from './reducers/userReducer'
+
 
 const Notification = () => {
   const notification = useSelector(state => state.notification)
@@ -23,11 +25,11 @@ const Notification = () => {
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
 
   const dispatch = useDispatch()
   const blogFormRef = useRef()
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -39,10 +41,10 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if(loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   const notify = (message) => {
     const timeoutId = setTimeout(() => dispatch(clearNotification()), 2000)
@@ -66,7 +68,7 @@ const App = () => {
 
       blogService.setToken(user.token)
 
-      setUser(user)
+      dispatch(setUser(user))
       setUsername('')
       setPassword('')
       notify('Login successful')
@@ -77,7 +79,7 @@ const App = () => {
 
   const logout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
-    setUser(null)
+    dispatch(setUser(null))
     notify('Logged out successfully')
   }
 

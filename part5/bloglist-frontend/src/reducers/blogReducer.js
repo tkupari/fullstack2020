@@ -5,7 +5,6 @@ const blogReducer = (state = [], action) => {
   case 'NEW_BLOG':
     return state.concat(action.data)
   case 'INIT_BLOGS':
-    console.log(action)
     return sortByLikes(action.data)
   case 'UPDATE_BLOG':
     return sortByLikes(state.map(b => b.id !== action.data.id ? b : action.data))
