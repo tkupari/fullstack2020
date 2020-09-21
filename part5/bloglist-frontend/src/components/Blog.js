@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
+
 const Blog = ({ blog, handleLike, handleDelete }) => {
   if(!blog)
     return null
@@ -6,7 +8,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
     <div>
       <h2>{blog.title} {blog.author}</h2>
       <div>
-        {blog.url}<br/>
+        <Link to={blog.url}>{blog.url}</Link><br/>
         {blog.likes} likes <button onClick={handleLike}>like</button><br/>
         {blog.user.name}<br/>
         <button onClick={handleDelete}>delete</button>
