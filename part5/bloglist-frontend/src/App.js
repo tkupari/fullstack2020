@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
+import BlogList from './components/BlogList'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import userService from './services/users'
@@ -51,9 +52,7 @@ const Users = () => {
   )
 }
 
-const User = ({ id }) => {
-  const users = useSelector(state => state.users.users)
-  const user = users.find(user => user.id === id)
+const User = ({ user }) => {
   if(!user)
     return null
   return (
@@ -68,6 +67,7 @@ const User = ({ id }) => {
     </div>
   )
 }
+
 
 const App = () => {
   const [username, setUsername] = useState('')
@@ -168,9 +168,14 @@ const App = () => {
         })
   }
 
-  const match = useRouteMatch('/users/:id')
-  const user_id = match
-    ? users.find(user => user.id === match.params.id).id
+  const usermatch = useRouteMatch('/users/:id')
+  const user = usermatch
+    ? users.find(user => user.id === usermatch.params.id)
+    : null
+
+  const blogmatch = useRouteMatch('/blogs/:id')
+  const blog = blogmatch
+    ? blogs.find(blog => blog.id === blogmatch.params.id)
     : null
 
   if(currentUser === null) {
@@ -214,18 +219,19 @@ const App = () => {
       </p>
       <Switch>
         <Route path='/users/:id'>
-          <User id={user_id} />
+          <User user={user} />
         </Route>
         <Route path='/users'>
           <Users />
+        </Route>
+        <Route path='/blogs/:id'>
+          <Blog blog={blog} handleDelete={() => handleDelete(blog)} handleLike={() => handleLike(blog)} />
         </Route>
         <Route path='/'>
           <Togglable buttonLabel="new note" ref={blogFormRef}>
             <BlogForm createBlog={addBlog}/>
           </Togglable>
-          {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog)} handleDelete={() => handleDelete(blog)} />
-          )}
+          <BlogList blogs={blogs} />
         </Route>
       </Switch>
     </div>
