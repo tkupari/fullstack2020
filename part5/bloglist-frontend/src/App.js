@@ -6,7 +6,7 @@ import Togglable from './components/togglable'
 import BlogForm from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { showMessage, clearNotification } from './reducers/notificationReducer'
-import { initializeBlogs, createBlog } from './reducers/blogReducer'
+import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './reducers/blogReducer'
 
 const Notification = () => {
   const notification = useSelector(state => state.notification)
@@ -100,7 +100,7 @@ const App = () => {
     blogService
       .update(blog.id, blogData)
       .then(updatedBlog => {
-        // setBlogs(blogs.map(b => b.id !== blog.id ? b : updatedBlog))
+        dispatch(updateBlog(updatedBlog))
       })
   }
 
@@ -108,7 +108,7 @@ const App = () => {
     if(window.confirm(`Remove blog ${blog.title}`))
       blogService.remove(blog.id)
         .then(() => {
-          // setBlogs(blogs.filter(b => b.id !== blog.id))
+          dispatch(deleteBlog(blog.id))
         })
   }
 
