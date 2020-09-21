@@ -11,8 +11,9 @@ import userReducer from './reducers/userReducer'
 const reducer = combineReducers({
   notification: notificationReducer,
   blogs: blogReducer,
-  user: userReducer
+  users: userReducer
 })
+
 const store = createStore(reducer)
 
 ReactDOM.render(

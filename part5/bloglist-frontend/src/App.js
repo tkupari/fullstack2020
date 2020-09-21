@@ -2,12 +2,17 @@ import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 import Togglable from './components/togglable'
 import BlogForm from './components/BlogForm'
 import { useDispatch, useSelector } from 'react-redux'
 import { showMessage, clearNotification } from './reducers/notificationReducer'
 import { initializeBlogs, createBlog, updateBlog, deleteBlog } from './reducers/blogReducer'
-import { setUser } from './reducers/userReducer'
+import { initializeUsers, setUser } from './reducers/userReducer'
+import {
+  BrowserRouter as Router,
+  Switch, Route
+} from 'react-router-dom'
 
 
 const Notification = () => {
@@ -22,6 +27,28 @@ const Notification = () => {
     : null
 }
 
+const Users = () => {
+  const users = useSelector(state => state.users.users)
+  return (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>blogs created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map(user =>
+            <tr key={user.id}><td>{user.name}</td><td>{user.blogs.length}</td></tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -29,11 +56,17 @@ const App = () => {
   const dispatch = useDispatch()
   const blogFormRef = useRef()
   const blogs = useSelector(state => state.blogs)
-  const user = useSelector(state => state.user)
+  const user = useSelector(state => state.users.current)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       dispatch(initializeBlogs(blogs))
+    )
+  }, [dispatch])
+
+  useEffect(() => {
+    userService.getAll().then(blogs =>
+      dispatch(initializeUsers(blogs))
     )
   }, [dispatch])
 
@@ -146,20 +179,27 @@ const App = () => {
   }
 
   return (
-    <div>
+    <Router>
       <Notification />
       <h2>blogs</h2>
       <p>
         logged in as {user.name}
         <button onClick={logout}>logout</button>
       </p>
-      <Togglable buttonLabel="new note" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog}/>
-      </Togglable>
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog)} handleDelete={() => handleDelete(blog)} />
-      )}
-    </div>
+      <Switch>
+        <Route path='/users'>
+          <Users />
+        </Route>
+        <Route path='/'>
+          <Togglable buttonLabel="new note" ref={blogFormRef}>
+            <BlogForm createBlog={addBlog}/>
+          </Togglable>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} handleLike={() => handleLike(blog)} handleDelete={() => handleDelete(blog)} />
+          )}
+        </Route>
+      </Switch>
+    </Router>
   )
 }
 
