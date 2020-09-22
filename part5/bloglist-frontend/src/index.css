@@ -13,3 +13,12 @@
 .error {
   color: red;
 }
+
+.navigation {
+  background: lightgrey;
+  padding: 5px;
+}
+
+.navigation * {
+  padding: 5px;
+}

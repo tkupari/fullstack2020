@@ -212,11 +212,15 @@ const App = () => {
   return (
     <div>
       <Notification />
-      <h2>blogs</h2>
-      <p>
+      <div className='navigation'>
+        <Link to='/'>blogs</Link>
+        <Link to='/users'>users</Link>
+        <span>
         logged in as {currentUser.name}
+        </span>
         <button onClick={logout}>logout</button>
-      </p>
+      </div>
+      <h2>blogs</h2>
       <Switch>
         <Route path='/users/:id'>
           <User user={user} />
