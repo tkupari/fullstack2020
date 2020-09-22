@@ -19,6 +19,6 @@
   padding: 5px;
 }
 
-.navigation * {
+.navigation a, span {
   padding: 5px;
 }
