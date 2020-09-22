@@ -228,7 +228,7 @@ const App = () => {
           <Blog blog={blog} handleDelete={() => handleDelete(blog)} handleLike={() => handleLike(blog)} />
         </Route>
         <Route path='/'>
-          <Togglable buttonLabel="new note" ref={blogFormRef}>
+          <Togglable buttonLabel="new blog" ref={blogFormRef}>
             <BlogForm createBlog={addBlog}/>
           </Togglable>
           <BlogList blogs={blogs} />

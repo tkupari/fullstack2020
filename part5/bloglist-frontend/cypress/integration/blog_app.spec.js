@@ -36,7 +36,7 @@ describe('Blog app', function() {
     })
 
     it('can create a new blog', function() {
-      cy.contains('new note').click()
+      cy.contains('new blog').click()
       cy.get('#title').type('Title for a new blog')
       cy.get('#author').type('Author Name')
       cy.get('#url').type('http://www.example.com')
