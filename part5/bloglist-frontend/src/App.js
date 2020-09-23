@@ -168,6 +168,14 @@ const App = () => {
         })
   }
 
+  const handleComment = (blog, comment) => {
+    console.log('adding comment', comment, 'to id', blog.id)
+    blogService.addComment(blog.id, comment)
+      .then(updatedBlog => {
+        dispatch(updateBlog(updatedBlog))
+      })
+  }
+
   const usermatch = useRouteMatch('/users/:id')
   const user = usermatch
     ? users.find(user => user.id === usermatch.params.id)
@@ -229,7 +237,7 @@ const App = () => {
           <Users />
         </Route>
         <Route path='/blogs/:id'>
-          <Blog blog={blog} handleDelete={() => handleDelete(blog)} handleLike={() => handleLike(blog)} />
+          <Blog blog={blog} handleDelete={() => handleDelete(blog)} handleLike={() => handleLike(blog)} handleComment={(comment) => handleComment(blog, comment)} />
         </Route>
         <Route path='/'>
           <Togglable buttonLabel="new blog" ref={blogFormRef}>
