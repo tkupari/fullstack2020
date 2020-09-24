@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
 
 const Blog = ({ blog, handleLike, handleDelete, handleComment }) => {
   const [comment, setComment] = useState('')
@@ -17,9 +18,9 @@ const Blog = ({ blog, handleLike, handleDelete, handleComment }) => {
       <h2>{blog.title} {blog.author}</h2>
       <div>
         <Link to={blog.url}>{blog.url}</Link><br/>
-        {blog.likes} likes <button onClick={handleLike}>like</button><br/>
+        {blog.likes} likes <Button size="sm" onClick={handleLike}>like</Button><br/>
         {blog.user.name}<br/>
-        <button onClick={handleDelete}>delete</button>
+        <Button size="sm" variant="danger" onClick={handleDelete}>delete</Button>
       </div>
       <h3>comments</h3>
       <form onSubmit={handleSumbit}>
@@ -28,7 +29,7 @@ const Blog = ({ blog, handleLike, handleDelete, handleComment }) => {
           id="comment"
           onChange={({ target }) => setComment(target.value)}
         />
-        <button>comment</button>
+        <Button variant="success" size="sm">comment</Button>
       </form>
       <ul>
         {blog.comments.map((comment, index) => <li key={index}>{comment}</li>)}

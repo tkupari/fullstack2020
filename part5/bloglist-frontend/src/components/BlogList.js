@@ -1,5 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Table } from 'react-bootstrap'
+
 const BlogList = ({ blogs }) => {
   const blogStyle = {
     paddingTop: 10,
@@ -10,17 +12,24 @@ const BlogList = ({ blogs }) => {
   }
 
   return (
-    <div>
-      {blogs.map(blog => {
-        return (
-          <div key={blog.id} className='blog' style={blogStyle}>
-            <Link to={`/blogs/${blog.id}`}>
-              {blog.title} - {blog.author}
-            </Link>
-          </div>
-        )
-      })}
-    </div>
+    <Table striped>
+      <tbody>
+        {blogs.map(blog => {
+          return (
+            <tr key={blog.id} className='blog' style={blogStyle}>
+              <td>
+                <Link to={`/blogs/${blog.id}`}>
+                  {blog.title}
+                </Link>
+              </td>
+              <td>
+                {blog.author}
+              </td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </Table>
   )
 }
 

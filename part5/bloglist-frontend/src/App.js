@@ -14,6 +14,7 @@ import {
   Switch, Route, Link,
   useRouteMatch
 } from 'react-router-dom'
+import { Form, Button, Table } from 'react-bootstrap'
 
 
 const Notification = () => {
@@ -33,7 +34,7 @@ const Users = () => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
+      <Table striped>
         <thead>
           <tr>
             <th></th>
@@ -47,7 +48,7 @@ const Users = () => {
             </tr>
           )}
         </tbody>
-      </table>
+      </Table>
     </div>
   )
 }
@@ -188,9 +189,9 @@ const App = () => {
 
   if(currentUser === null) {
     return (
-      <div>
+      <div className="container">
         <Notification />
-        <form id='loginForm' onSubmit={handleLogin}>
+        <Form id='loginForm' onSubmit={handleLogin}>
           <div>
             username
             <input
@@ -211,14 +212,14 @@ const App = () => {
               onChange={({ target }) => setPassword(target.value)}
             />
           </div>
-          <button id="loginButton" type="submit">login</button>
-        </form>
+          <Button id="loginButton" type="submit">login</Button>
+        </Form>
       </div>
     )
   }
 
   return (
-    <div>
+    <div className="container">
       <Notification />
       <div className='navigation'>
         <Link to='/'>blogs</Link>
@@ -226,7 +227,7 @@ const App = () => {
         <span>
         logged in as {currentUser.name}
         </span>
-        <button onClick={logout}>logout</button>
+        <Button variant="secondary" size="sm" onClick={logout}>logout</Button>
       </div>
       <h2>blogs</h2>
       <Switch>
