@@ -51,7 +51,12 @@ const Authors = (props) => {
 
       <h3>set birthyear</h3>
       <form onSubmit={updateYear}>
-        name <input name="name" /> <br/>
+        name
+        <select name="name">
+          {result.data.allAuthors.map(a =>
+            <option key={a.name} value={a.name}>{a.name}</option>
+          )}
+        </select><br/>
         born <input name="born" /> <br/>
         <button>update</button>
       </form>
