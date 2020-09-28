@@ -5,7 +5,10 @@ import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 const Authors = (props) => {
   const result = useQuery(ALL_AUTHORS)
   const [updateAuthor] = useMutation(EDIT_AUTHOR, {
-    refetchQueries: [{ query: ALL_AUTHORS }]
+    refetchQueries: [{ query: ALL_AUTHORS }],
+    onError: (error) => {
+      props.setError(error.message)
+    }
   })
 
   const updateYear = (event) => {
