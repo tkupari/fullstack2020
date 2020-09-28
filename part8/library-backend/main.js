@@ -48,7 +48,11 @@ const resolvers = {
   Query: {
     bookCount: () => Book.count({}),
     authorCount: () => Author.count({}),
-    allBooks: () => {
+    allBooks: (root, args) => {
+      console.log(args)
+      if(args.genre) {
+        return Book.find({ genres: { $in: [args.genre] }}).populate('author', {name: 1, born: 1})
+      }
       return Book.find({}).populate('author', {name: 1, born: 1})
     },
     allAuthors: () => {
