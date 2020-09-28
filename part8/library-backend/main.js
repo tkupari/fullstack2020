@@ -136,7 +136,7 @@ const resolvers = {
       return Book.find({}).populate('author', {name: 1, born: 1})
     },
     allAuthors: () => {
-      return Author.find({})
+      return Author.find({}).populate('bookCount')
     }
   },
   Mutation: {
