@@ -36,6 +36,7 @@ query {
     author {
       name
     }
+    genres
   }
 }
 `
