@@ -2,6 +2,7 @@ import { gql } from '@apollo/client'
 
 export const BOOK_DETAILS = gql`
 fragment BookDetails on Book {
+  id
   title
   author {
     name
@@ -28,6 +29,7 @@ ${BOOK_DETAILS}
 export const ALL_AUTHORS = gql`
 query {
   allAuthors {
+    id
     name
     bookCount
     born

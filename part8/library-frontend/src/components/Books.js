@@ -3,12 +3,12 @@ import { useQuery } from '@apollo/client'
 import { ALL_BOOKS, GENRES } from '../queries'
 
 const Books = (props) => {
-  const { loading, refetch, data } = useQuery(ALL_BOOKS)
+  const [filter, setFilter] = useState({})
+  const { loading, refetch, data } = useQuery(ALL_BOOKS, { variables: filter })
   const genreQuery = useQuery(GENRES)
-  const [filter, setFilter] = useState(null)
 
   useEffect(() => {
-    refetch({ genre: filter })
+    refetch(filter)
   }, [refetch, filter])
 
   if (!props.show) {
@@ -46,8 +46,8 @@ const Books = (props) => {
         </tbody>
       </table>
       <div>
-      {genres.map(g => <button key={g} style={g === filter ? {color: 'green'} : null} onClick={() => setFilter(g)}>{g}</button>)}
-      <button onClick={() => setFilter(null)}>all genres</button>
+      {genres.map(g => <button key={g} style={g === filter ? {color: 'green'} : null} onClick={() => setFilter({ genre: g })}>{g}</button>)}
+      <button onClick={() => setFilter({})}>all genres</button>
       </div>
     </div>
   )

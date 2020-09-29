@@ -18,12 +18,14 @@ const pubsub = new PubSub()
 
 const typeDefs = gql`
   type Book {
+    id: ID!,
     title: String!
     published: Int!
     author: Author!
     genres: [String!]!
   }
   type Author {
+    id: ID!,
     name: String!
     bookCount: Int
     born: Int
