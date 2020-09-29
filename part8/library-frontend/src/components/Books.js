@@ -1,25 +1,25 @@
 import React, {useState, useEffect} from 'react'
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { ALL_BOOKS, GENRES } from '../queries'
 
 const Books = (props) => {
-  const [getBooks, result] = useLazyQuery(ALL_BOOKS)
+  const { loading, refetch, data } = useQuery(ALL_BOOKS)
   const genreQuery = useQuery(GENRES)
   const [filter, setFilter] = useState(null)
 
   useEffect(() => {
-    getBooks({ variables: { genre: filter }})
-  }, [getBooks, filter])
+    refetch({ genre: filter })
+  }, [refetch, filter])
 
   if (!props.show) {
     return null
   }
 
-  if (result.loading) {
+  if (loading) {
     return <div>loading...</div>
   }
   const genres = genreQuery.data.genres
-  const booksToShow = result.data.allBooks
+  const booksToShow = data.allBooks
 
   return (
     <div>
