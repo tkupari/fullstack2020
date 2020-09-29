@@ -12,6 +12,7 @@ const schema = new mongoose.Schema({
   },
 })
 
+// this prevents N+1
 schema.virtual('bookCount', {
   ref: 'Book',
   localField: '_id',
