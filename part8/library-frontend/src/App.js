@@ -4,7 +4,8 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommended from './components/Recommended'
-import {useApolloClient} from '@apollo/client'
+import { useSubscription, useApolloClient } from '@apollo/client'
+import { BOOK_ADDED } from './queries'
 
 const Notify = ({ errorMessage }) => {
   if (!errorMessage)
@@ -42,6 +43,12 @@ const App = () => {
     const oldtoken = localStorage.getItem('library-user-token')
     setToken(oldtoken)
   }, [])
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      notify(`Book ${subscriptionData.data.bookAdded.title} added`)
+    }
+  })
 
   if (!token) {
     return (
