@@ -18,4 +18,6 @@ const calculateBmi = (cm: number, kg: number): string => {
   return "Obese Class III (Very severely obese)"
 }
 
-console.log(calculateBmi(180, 74))
+const cm = Number(process.argv[2])
+const kg = Number(process.argv[3])
+console.log(calculateBmi(cm, kg))
