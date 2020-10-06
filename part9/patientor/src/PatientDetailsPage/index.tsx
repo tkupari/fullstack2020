@@ -1,11 +1,23 @@
-import React from "react";
+import React, { ReactHTML } from "react";
 import axios from "axios";
 import { Container, Icon } from "semantic-ui-react";
 
-import { Patient } from "../types";
+import { Patient, Entry } from "../types";
 import { apiBaseUrl } from "../constants";
 import { useStateValue, setPatientDetails } from "../state";
 import { useParams } from "react-router-dom";
+
+const ShowEntry: React.FC<{entry: Entry }> = ({ entry }) => {
+  return (
+    <div>
+      {entry.date} <em>{entry.description}</em>
+      <ul>
+        {entry.diagnosisCodes?.map((d, i) => <li key={i}>{d}</li> )}
+      </ul>
+    </div>
+  )
+
+}
 
 const PatientListPage: React.FC = () => {
   const { patientId } = useParams<{ patientId: string }>();
@@ -68,6 +80,10 @@ const PatientListPage: React.FC = () => {
           <br/>
           occupation: {patient.occupation}
         </div>
+        <h3>entries</h3>
+        {patient.entries && patient.entries.map((entry, index) => {
+          return <ShowEntry key={index} entry={entry} />
+        })}
       </Container>
     </div>
   );
