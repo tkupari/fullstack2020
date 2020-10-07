@@ -1,4 +1,4 @@
-import React, { ReactHTML } from "react";
+import React from "react";
 import axios from "axios";
 import { Container, Icon, Segment } from "semantic-ui-react";
 
@@ -30,10 +30,10 @@ const HealthCheckEntryDetails: React.FC<{entry: HealthCheckEntry}> = ({ entry })
           <li key={i}>{d} {diagnoses[d].name}</li>
         )}
       </ul>
-      {[...Array(3 - entry.healthCheckRating)].map(_ =>
-        <Icon name='heart' />)}
-      {[...Array(entry.healthCheckRating)].map(_ =>
-        <Icon name='heart outline' />)}
+      {[...Array(3 - entry.healthCheckRating)].map((_, i) =>
+        <Icon key={i} name='heart' />)}
+      {[...Array(entry.healthCheckRating)].map((_, i) =>
+        <Icon key={3 - entry.healthCheckRating + i} name='heart outline' />)}
     </Segment>
   )
 }
@@ -91,7 +91,7 @@ const EntryDetails: React.FC<{entry: Entry }> = ({ entry }) => {
 
 const PatientListPage: React.FC = () => {
   const { patientId } = useParams<{ patientId: string }>();
-  const [{ patients, diagnoses }, dispatch] = useStateValue();
+  const [{ patients }, dispatch] = useStateValue();
 
   React.useEffect(() => {
     const fetchPatientDetails = async (patientId: string) => {
