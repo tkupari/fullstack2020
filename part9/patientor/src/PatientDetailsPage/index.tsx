@@ -1,24 +1,91 @@
 import React, { ReactHTML } from "react";
 import axios from "axios";
-import { Container, Icon } from "semantic-ui-react";
+import { Container, Icon, Segment } from "semantic-ui-react";
 
-import { Patient, Entry, Diagnosis } from "../types";
+import {
+  Patient,
+  Entry,
+  HealthCheckEntry,
+  HospitalEntry,
+  OccupationalHealthcareEntry
+} from "../types";
 import { apiBaseUrl } from "../constants";
 import { useStateValue, setPatientDetails } from "../state";
 import { useParams } from "react-router-dom";
 
-const ShowEntry: React.FC<{entry: Entry }> = ({ entry }) => {
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+const HealthCheckEntryDetails: React.FC<{entry: HealthCheckEntry}> = ({ entry }) => {
   const [{ diagnoses }] = useStateValue();
   return (
-    <div>
-      {entry.date} <em>{entry.description}</em>
+    <Segment>
+      <h4>{entry.date} <Icon name='doctor' size='big' /></h4>
+      <em>{entry.description}</em>
       <ul>
         {entry.diagnosisCodes?.map((d, i) =>
           <li key={i}>{d} {diagnoses[d].name}</li>
         )}
       </ul>
-    </div>
+      {[...Array(3 - entry.healthCheckRating)].map(_ =>
+        <Icon name='heart' />)}
+      {[...Array(entry.healthCheckRating)].map(_ =>
+        <Icon name='heart outline' />)}
+    </Segment>
   )
+}
+
+const OccupationalHealthCareDetails: React.FC<{entry: OccupationalHealthcareEntry}> = ({ entry }) => {
+  const [{ diagnoses }] = useStateValue();
+  return (
+    <Segment>
+      <h4>
+        {entry.date}
+        <Icon name='stethoscope' size='big' />
+        {entry.employerName}
+      </h4>
+      <em>{entry.description}</em>
+      <ul>
+        {entry.diagnosisCodes?.map((d, i) =>
+          <li key={i}>{d} {diagnoses[d].name}</li>
+        )}
+      </ul>
+    </Segment>
+  )
+}
+
+const HospitalEntryDetails: React.FC<{entry: HospitalEntry}> = ({ entry }) => {
+  const [{ diagnoses }] = useStateValue();
+  return (
+    <Segment>
+      <h4>
+        {entry.date}
+        <Icon name='hospital' size='big' />
+      </h4>
+      <ul>
+        {entry.diagnosisCodes?.map((d, i) =>
+          <li key={i}>{d} {diagnoses[d].name}</li>
+        )}
+      </ul>
+      {entry.discharge.date} {entry.discharge.criteria}
+    </Segment>
+  )
+}
+
+const EntryDetails: React.FC<{entry: Entry }> = ({ entry }) => {
+  switch(entry.type) {
+    case "Hospital":
+      return <HospitalEntryDetails entry={entry} />
+    case "OccupationalHealthcare":
+      return <OccupationalHealthCareDetails entry={entry} />
+    case "HealthCheck":
+      return <HealthCheckEntryDetails entry={entry} />
+    default:
+      return assertNever(entry);
+  }
 
 }
 
@@ -85,7 +152,7 @@ const PatientListPage: React.FC = () => {
         </div>
         <h3>entries</h3>
         {patient.entries && patient.entries.map((entry, index) => {
-          return <ShowEntry key={index} entry={entry} />
+          return <EntryDetails key={index} entry={entry} />
         })}
       </Container>
     </div>
