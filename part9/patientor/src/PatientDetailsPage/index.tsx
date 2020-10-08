@@ -65,6 +65,7 @@ const HospitalEntryDetails: React.FC<{entry: HospitalEntry}> = ({ entry }) => {
         {entry.date}
         <Icon name='hospital' size='big' />
       </h4>
+      <em>{entry.description}</em>
       <ul>
         {entry.diagnosisCodes?.map((d, i) =>
           <li key={i}>{d} {diagnoses[d].name}</li>
