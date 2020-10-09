@@ -57,6 +57,7 @@ const toNewEntry = (object: any): NewEntry => {
     date: parseDate(object.date),
     description: parseString(object.description, 'description'),
     specialist: parseString(object.specialist, 'specialist'),
+    diagnosisCodes: object.diagnosisCodes
   };
   switch(object.type) {
     case "OccupationalHealthCare":
